@@ -67,7 +67,7 @@ if packageContent and packageContent.metadata and packageContent.data then
 -- PACKAGER CODE. APP IS ISOLATED.
 local function __PACKAGER_MAIN()
 if not fs.setEnvironment then
-    require("/newEnv")
+    require("/lib/newEnv")
 end
 fs.setEnvironment(true, "]] .. programPath .. [[")]] .. "\n-- PACKAGER INIT CODE END.\n" .. mainContent .. "\n-- PACKAGER CODE. APP IS ISOLATED.\nfs.unsetEnvironment()\nend" .. [[
 

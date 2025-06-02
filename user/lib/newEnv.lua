@@ -1,6 +1,5 @@
-local libFolder = (...):match("(.-)[^%.]+$")
-local nsetapi = require(fs.combine(libFolder, "nsetapi"))
-dofile(fs.combine(libFolder, "dbprotect.lua"))
+local nsetapi = require("/lib/nsetapi")
+dofile("/lib/dbprotect.lua")
 
 local oldFS = {}
 for k, v in pairs(fs) do
@@ -8,8 +7,8 @@ for k, v in pairs(fs) do
 end
 
 nsetapi.useFS(oldFS)
-nsetapi.setDefault(fs.combine(libFolder, "envmod.settings"), "ENV_ENABLED", false)
-nsetapi.setDefault(fs.combine(libFolder, "envmod.settings"), "ENV_PATH", "/")
+nsetapi.setDefault("/lib/envmod.settings", "ENV_ENABLED", false)
+nsetapi.setDefault("/lib/envmod.settings", "ENV_PATH", "/")
 
 local function normalize(path)
     local result = {}
@@ -29,9 +28,9 @@ local function normalize(path)
 end
 
 fs.unsetEnvironment = function()
-    local newDir = fs.combine(nsetapi.get(fs.combine(libFolder, "envmod.settings"), "ENV_PATH"), shell.dir())
-    nsetapi.save(fs.combine(libFolder, "envmod.settings"), "ENV_ENABLED", false)
-    nsetapi.save(fs.combine(libFolder, "envmod.settings"), "ENV_PATH", "/")
+    local newDir = fs.combine(nsetapi.get("/lib/envmod.settings", "ENV_PATH"), shell.dir())
+    nsetapi.save("/lib/envmod.settings", "ENV_ENABLED", false)
+    nsetapi.save("/lib/envmod.settings", "ENV_PATH", "/")
 
     for k, v in pairs(oldFS) do
         for k2, _ in pairs(fs) do
@@ -46,8 +45,8 @@ fs.unsetEnvironment = function()
 end
 
 fs.setEnvironment = function(enabled, path)
-    nsetapi.save(fs.combine(libFolder, "envmod.settings"), "ENV_ENABLED", enabled)
-    nsetapi.save(fs.combine(libFolder, "envmod.settings"), "ENV_PATH", path)
+    nsetapi.save("/lib/envmod.settings", "ENV_ENABLED", enabled)
+    nsetapi.save("/lib/envmod.settings", "ENV_PATH", path)
 
     local newFS = {}
 
@@ -60,7 +59,7 @@ fs.setEnvironment = function(enabled, path)
     end
 
     newFS.sanitizePath = function(path)
-        if nsetapi.get(fs.combine(libFolder, "envmod.settings"), "ENV_ENABLED") then
+        if nsetapi.get("/lib/envmod.settings", "ENV_ENABLED") then
             local norm = normalize(oldFS.combine(path))
             if not norm then
                 return nil
@@ -73,7 +72,7 @@ fs.setEnvironment = function(enabled, path)
                 for _, drive in pairs(drives) do
                     if parts[1] == drive.getMountPath() then found = true end
                 end
-                if not found then return oldFS.combine(nsetapi.get(fs.combine(libFolder, "envmod.settings"), "ENV_PATH"), norm) end
+                if not found then return oldFS.combine(nsetapi.get("/lib/envmod.settings", "ENV_PATH"), norm) end
             end
 
             return norm
@@ -93,7 +92,7 @@ fs.setEnvironment = function(enabled, path)
         path = sanitizePath(path)
         local list = oldFS.list(path)
         -- this makes the machine think rom and disks exist, even when they don't
-        if path == nsetapi.get(fs.combine(libFolder, "envmod.settings"), "ENV_PATH") then
+        if path == nsetapi.get("/lib/envmod.settings", "ENV_PATH") then
             table.insert(list, "rom")
             local drives = { peripheral.find("drive") }
             for _, drive in pairs(drives) do
