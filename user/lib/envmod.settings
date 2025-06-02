@@ -1,0 +1,4 @@
+{
+  ENV_ENABLED = false,
+  ENV_PATH = "/",
+}
